@@ -1,9 +1,14 @@
 #IMPORTS
 import os
+import sys
 from PySide2 import QtWidgets, QtCore
 from maya.OpenMayaUI import MQtUtil
 from shiboken2 import wrapInstance
 
+sys.path.append("D:/Documentos/5/Pipeline_TD")
+from project_manager import ProjectManager
+
+production_path="D:/Documentos/5/Production_Test"
 
 class ProductionUI(QtWidgets.QDialog):
     def __init__(self):
@@ -16,6 +21,7 @@ class ProductionUI(QtWidgets.QDialog):
         self._create_widgets()
         self._create_main_screen()
         self._create_project_sceen()
+        self._connect_project_screen()
 
     def _create_widgets(self):
         #TITLE
@@ -50,6 +56,7 @@ class ProductionUI(QtWidgets.QDialog):
 
         self.project_name=QtWidgets.QLabel("Project Name:")
         self.project_name_menu=QtWidgets.QComboBox()
+        self.project_name_menu.currentIndexChanged.connect(self.update_project_path)
 
         self.project_path=QtWidgets.QLabel("Project Path:")
         self.project_path_line=QtWidgets.QLineEdit()
@@ -213,6 +220,24 @@ class ProductionUI(QtWidgets.QDialog):
         project_main_layout.addLayout(add_folder_layout)
         project_main_layout.addLayout(asset_layout)
         project_main_layout.addWidget(self.editor_tab_widget)
+
+    def _connect_project_screen(self):
+        prj_manager=ProjectManager(production_path)
+        file_list=prj_manager.search_files()
+        self.project_name_menu.clear()
+        for folder in file_list:
+            self.project_name_menu.addItem(os.path.basename(folder))
+
+        self.update_project_path()
+
+    def update_project_path(self):
+        selected_project=self.project_name_menu.currentText()
+        if selected_project:
+            project_path=os.path.join(production_path,selected_project)
+            self.project_path_line.setText(project_path)
+
+        return project_path
+
 
 if __name__ == "__main__":
     try:
