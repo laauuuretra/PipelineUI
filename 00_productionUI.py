@@ -1,13 +1,8 @@
 #IMPORTS
-import sys
-from PySide2 import QtWidgets, QtGui, QtCore
-from PySide2.QtWidgets import QFrame
+import os
+from PySide2 import QtWidgets, QtCore
 from maya.OpenMayaUI import MQtUtil
 from shiboken2 import wrapInstance
-import logging
-import maya.cmds as mc
-import json
-import os
 
 
 class ProductionUI(QtWidgets.QDialog):
@@ -21,7 +16,6 @@ class ProductionUI(QtWidgets.QDialog):
         self._create_widgets()
         self._create_main_screen()
         self._create_project_sceen()
-
 
     def _create_widgets(self):
         #TITLE
@@ -130,7 +124,6 @@ class ProductionUI(QtWidgets.QDialog):
         main_layout.addWidget(self.title_label)
         main_layout.addWidget(self.tab_widget)
 
-
     def _create_project_sceen(self):
         #Create and add layouts
         project_main_layout=QtWidgets.QVBoxLayout(self.project_tab)
@@ -220,12 +213,6 @@ class ProductionUI(QtWidgets.QDialog):
         project_main_layout.addLayout(add_folder_layout)
         project_main_layout.addLayout(asset_layout)
         project_main_layout.addWidget(self.editor_tab_widget)
-
-
-
-
-
-
 
 if __name__ == "__main__":
     try:
