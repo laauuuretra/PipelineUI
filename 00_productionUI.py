@@ -16,7 +16,9 @@ class ProductionUI(QtWidgets.QDialog):
 
         #Set title and default config of the UI
         self.setWindowTitle("Production UI")
-        self.setFixedSize(400,680)
+        self.setFixedSize(450,690)
+
+        self.prj_manager = ProjectManager(production_path)
 
         self._create_widgets()
         self._create_main_screen()
@@ -56,7 +58,6 @@ class ProductionUI(QtWidgets.QDialog):
 
         self.project_name=QtWidgets.QLabel("Project Name:")
         self.project_name_menu=QtWidgets.QComboBox()
-        self.project_name_menu.currentIndexChanged.connect(self.update_project_path)
 
         self.project_path=QtWidgets.QLabel("Project Path:")
         self.project_path_line=QtWidgets.QLineEdit()
@@ -68,10 +69,9 @@ class ProductionUI(QtWidgets.QDialog):
 
         self.window_explorer = QtWidgets.QTreeView()
         self.file_model = QtWidgets.QFileSystemModel()
-        self.file_model.setRootPath('')
+        self.file_model.setRootPath(production_path)
         self.window_explorer.setModel(self.file_model)
-        self.window_explorer.setRootIndex(self.file_model.index(os.path.expanduser("~")))
-        self.window_explorer.setHeaderHidden(True)
+        self.window_explorer.setRootIndex(self.file_model.index(production_path))
 
         #Folder creation
         self.sequence_label=QtWidgets.QLabel("Sequence:")
@@ -87,8 +87,6 @@ class ProductionUI(QtWidgets.QDialog):
         self.lighting_check=QtWidgets.QCheckBox()
         self.vfx_label=QtWidgets.QLabel("VFX")
         self.vfx_check=QtWidgets.QCheckBox()
-
-
 
         #Assets info and path
         self.asset_path=QtWidgets.QLabel("Assets path:")
@@ -222,21 +220,15 @@ class ProductionUI(QtWidgets.QDialog):
         project_main_layout.addWidget(self.editor_tab_widget)
 
     def _connect_project_screen(self):
-        prj_manager=ProjectManager(production_path)
-        file_list=prj_manager.search_files()
+        file_list=self.prj_manager.search_files()
         self.project_name_menu.clear()
-        for folder in file_list:
-            self.project_name_menu.addItem(os.path.basename(folder))
+        for i, folder in enumerate(file_list):
+            if i == 0:
+                self.project_name_menu.addItem("")
+            else:
+                self.project_name_menu.addItem(os.path.basename(folder))
 
-        self.update_project_path()
-
-    def update_project_path(self):
-        selected_project=self.project_name_menu.currentText()
-        if selected_project:
-            project_path=os.path.join(production_path,selected_project)
-            self.project_path_line.setText(project_path)
-
-        return project_path
+        self.project_name_menu.currentIndexChanged.connect(lambda: self.project_path_line.setText(self.prj_manager.update_project_path(self.project_name_menu)))
 
 
 if __name__ == "__main__":
