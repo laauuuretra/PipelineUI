@@ -229,6 +229,7 @@ class ProductionUI(QtWidgets.QDialog):
                 self.project_name_menu.addItem(os.path.basename(folder))
 
         self.project_name_menu.currentIndexChanged.connect(lambda: self.project_path_line.setText(self.prj_manager.update_project_path(self.project_name_menu)))
+        self.create_project_button.clicked.connect(lambda: self.prj_manager.create_default_project(production_path,self.new_project_name.text()))
 
 
 if __name__ == "__main__":
